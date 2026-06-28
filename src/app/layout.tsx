@@ -14,38 +14,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nutanix Study Companion — Interactive HCI Refresher",
+  title: "Nutanix Bootcamp — Learn by Doing",
   description:
-    "Interactive study companion for the Nutanix Cloud Platform. Built for network engineers refreshing on HCI concepts: flashcards, quizzes, and a network-to-Nutanix bridge guide.",
+    "Interactive bootcamp for absolute beginners: networking fundamentals through Nutanix Cloud Platform operations. Lessons, labs, command sims, and diagram builders.",
   keywords: [
     "Nutanix",
     "HCI",
     "AHV",
     "Prism",
     "Flow",
-    "DSF",
-    "study",
-    "refresher",
     "networking",
-    "NC2",
+    "OSI",
+    "VLAN",
+    "bootcamp",
+    "learn-by-doing",
   ],
-  authors: [{ name: "Nutanix Study Companion" }],
-  icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
-  },
-  openGraph: {
-    title: "Nutanix Study Companion",
-    description:
-      "Interactive refresher on Nutanix Cloud Platform concepts for network engineers.",
-    siteName: "Nutanix Study Companion",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Nutanix Study Companion",
-    description:
-      "Interactive refresher on Nutanix Cloud Platform concepts for network engineers.",
-  },
+  authors: [{ name: "Nutanix Bootcamp" }],
 };
 
 export default function RootLayout({
@@ -54,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
