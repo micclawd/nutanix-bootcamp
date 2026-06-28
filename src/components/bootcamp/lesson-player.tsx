@@ -241,7 +241,7 @@ export function LessonPlayer({
           <Trophy className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold">Practice Exercises</h2>
           <span className="text-xs text-muted-foreground ml-auto">
-            Complete all {lesson.exercises.length} to unlock the next lesson
+            Complete all {lesson.exercises.length} to mark this lesson done
           </span>
         </div>
 
@@ -272,7 +272,7 @@ export function LessonPlayer({
               <p className="text-sm text-muted-foreground">
                 You earned <span className="text-primary font-semibold">+{lesson.xp} XP</span>
                 {nextLessonId
-                  ? ". The next lesson is unlocked — keep going!"
+                  ? ". Keep going — onto the next lesson!"
                   : ". You've completed the entire bootcamp!"}
               </p>
             </div>
@@ -309,9 +309,8 @@ export function LessonPlayer({
         {nextLessonId ? (
           <Button
             onClick={() => onNavigateToLesson(nextLessonId)}
-            disabled={!allExercisesDone}
           >
-            {allExercisesDone ? "Next lesson" : "Complete to unlock"}
+            Next lesson
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         ) : (

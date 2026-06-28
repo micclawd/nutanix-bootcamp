@@ -44,14 +44,11 @@ export const useBootcampStore = create<BootcampState>()(
       currentLessonId: null,
 
       isLessonUnlocked: (lessonId, allLessonIds) => {
-        const state = get();
-        // First lesson is always unlocked
-        if (lessonId === allLessonIds[0]) return true;
-        // Otherwise unlocked if the previous lesson is completed
-        const idx = allLessonIds.indexOf(lessonId);
-        if (idx <= 0) return false;
-        const prevId = allLessonIds[idx - 1];
-        return state.completedLessons.includes(prevId);
+        // All lessons are always unlocked — free exploration mode.
+        // (lessonId and allLessonIds params kept for API compatibility.)
+        void lessonId;
+        void allLessonIds;
+        return true;
       },
 
       completeLesson: (lessonId, xpEarned) =>

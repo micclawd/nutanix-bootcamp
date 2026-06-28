@@ -22,7 +22,6 @@ import {
   HardDrive,
   Workflow,
   Cloud,
-  Lock,
   CheckCircle2,
   Play,
   Zap,
@@ -86,7 +85,8 @@ export function CurriculumPath({ onSelectLesson }: CurriculumPathProps) {
                 Start with networking fundamentals (IPs, VLANs, routing) and
                 progress all the way through Nutanix HCI operations. Learn by
                 doing — every lesson mixes theory with hands-on exercises:
-                MCQs, flashcards, command sims, and diagram builders.
+                MCQs, flashcards, command sims, and diagram builders. All
+                lessons are unlocked — jump to any topic you want.
               </p>
               <div className="flex items-center gap-4 text-xs text-slate-400 pt-2">
                 <span className="flex items-center gap-1">
@@ -184,21 +184,17 @@ export function CurriculumPath({ onSelectLesson }: CurriculumPathProps) {
               </div>
 
               <div className="grid gap-2 md:grid-cols-2">
-                {moduleLessons.map((lesson, idx) => {
-                  const unlocked = isLessonUnlocked(lesson.id, allLessonIds);
+                {moduleLessons.map((lesson) => {
                   const completed = completedLessons.includes(lesson.id);
                   const globalIdx = allLessonIds.indexOf(lesson.id);
                   return (
                     <Card
                       key={lesson.id}
                       className={cn(
-                        "transition-all",
-                        unlocked
-                          ? "cursor-pointer hover:border-primary/40 hover:bg-muted/30"
-                          : "opacity-60",
+                        "transition-all cursor-pointer hover:border-primary/40 hover:bg-muted/30",
                         completed && "border-emerald-500/30"
                       )}
-                      onClick={() => unlocked && onSelectLesson(lesson.id)}
+                      onClick={() => onSelectLesson(lesson.id)}
                     >
                       <CardContent className="p-3 flex items-center gap-3">
                         <div
@@ -206,17 +202,13 @@ export function CurriculumPath({ onSelectLesson }: CurriculumPathProps) {
                             "shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono font-bold",
                             completed
                               ? "bg-emerald-500/20 text-emerald-400"
-                              : unlocked
-                              ? "bg-primary/20 text-primary"
-                              : "bg-muted text-muted-foreground"
+                              : "bg-primary/20 text-primary"
                           )}
                         >
                           {completed ? (
                             <CheckCircle2 className="h-4 w-4" />
-                          ) : unlocked ? (
-                            globalIdx + 1
                           ) : (
-                            <Lock className="h-3.5 w-3.5" />
+                            globalIdx + 1
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -231,9 +223,7 @@ export function CurriculumPath({ onSelectLesson }: CurriculumPathProps) {
                             {lesson.xp} XP
                           </div>
                         </div>
-                        {unlocked && (
-                          <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
-                        )}
+                        <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
                       </CardContent>
                     </Card>
                   );
