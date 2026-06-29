@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { ExerciseRenderer } from "./exercises";
+import { PodcastPlayer } from "./podcast-player";
 import { useBootcampStore } from "@/lib/bootcamp-store";
 import {
   lessonById,
@@ -185,6 +186,9 @@ export function LessonPlayer({
       </div>
 
       <Separator />
+
+      {/* Podcast player */}
+      <PodcastPlayer lessonId={lesson.id} lessonTitle={lesson.title} />
 
       {/* Theory */}
       <Card>
