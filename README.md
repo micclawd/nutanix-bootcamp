@@ -1,0 +1,199 @@
+# Nutanix Bootcamp — Learn by Doing
+
+An interactive, beginner-friendly bootcamp for learning Nutanix from the ground up. Starts with networking fundamentals (IPs, VLANs, routing) and progresses all the way through Nutanix HCI operations. Every lesson mixes theory with hands-on exercises: MCQs, flashcards, command sims, diagram builders, fill-in-the-blank, and scenario decision trees.
+
+![Tech Dark Theme](https://img.shields.io/badge/theme-tech%20dark-0a0e1a) ![Next.js 16](https://img.shields.io/badge/Next.js-16-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Mobile Friendly](https://img.shields.io/badge/mobile-friendly-green)
+
+## Features
+
+- **21 lessons across 9 modules** — 10 networking fundamentals + 11 Nutanix (HCI, CVM, AHV, RF, DSF, AHV networking, Prism, Flow, data services, ops, hybrid cloud)
+- **6 interactive exercise types** — MCQ, fill-in-the-blank, flashcard, scenario, command simulator, drag-and-drop diagram builder
+- **Podcast for every lesson** — 2-host conversational audio (Alex the learner + Sam the expert), ~2 min per lesson, generated via TTS
+- **Full-featured podcast player** — play/pause, skip ±15s, speed control (0.75×/1×/1.25×/1.5×), volume/mute, seekable progress bar, download
+- **XP system + progress tracking** — earn XP per lesson and bonus XP for first-try correctness; all progress saved in localStorage
+- **Free exploration** — all lessons unlocked; jump to any topic
+- **Tech-dark IDE theme** — deep slate background, cyan/violet neon accents, monospace terminal blocks
+- **Fully mobile responsive** — works on phones, tablets, and desktops
+
+## Tech Stack
+
+- **Framework**: Next.js 16 with App Router
+- **Language**: TypeScript 5
+- **Styling**: Tailwind CSS 4 + shadcn/ui
+- **State**: Zustand + localStorage persistence
+- **TTS**: z-ai-web-dev-sdk (text-to-speech for podcast generation)
+- **Audio**: Native HTML5 Audio API with custom player UI
+
+## Run Locally
+
+### Prerequisites
+
+- **Node.js 18+** or **Bun** (recommended — faster)
+- **Git**
+- **A ZAI API key** — needed only if you want to (re)generate podcast audio. Get one from [Z.ai](https://z.ai). The app works fully without it; podcasts just show a "not yet generated" fallback.
+
+### Step 1: Clone
+
+```bash
+git clone https://github.com/micclawd/nutanix-bootcamp.git
+cd nutanix-bootcamp
+```
+
+### Step 2: Install dependencies
+
+```bash
+# Using Bun (recommended)
+bun install
+
+# OR using npm
+npm install
+```
+
+### Step 3: Set up environment (optional — only for podcast generation)
+
+Create a `.env` file in the project root:
+
+```bash
+ZAI_API_KEY=your_api_key_here
+```
+
+> The app runs fine without this — you just won't be able to generate new podcast audio.
+
+### Step 4: Run the dev server
+
+```bash
+# Using Bun
+bun run dev
+
+# OR using npm
+npm run dev
+```
+
+Open **http://localhost:3000** in your browser. The app hot-reloads on changes.
+
+### Step 5 (Optional): Generate podcast audio
+
+Podcasts are pre-generated WAV files in `/public/audio/`. If they're missing or you want to regenerate them, see the [Podcast Generation](#podcast-generation) section below.
+
+## Podcast Generation
+
+Each lesson has an associated ~2-minute podcast featuring two AI-generated voices (Alex the learner + Sam the expert) discussing the lesson's key concepts. The audio is generated via the ZAI TTS API and stored as `/public/audio/lesson-{id}.wav`.
+
+### Generate all podcasts
+
+```bash
+# Make sure ZAI_API_KEY is set in .env first
+bun run scripts/generate-podcasts.ts
+```
+
+This will:
+1. Generate a conversational script for each lesson (Alex asks, Sam explains)
+2. Call the TTS API for each line (~7 lines per lesson in compact mode)
+3. Concatenate the audio chunks into one WAV per lesson
+4. Save to `/public/audio/lesson-{id}.wav`
+
+**Time**: ~30-45 minutes for all 21 lessons (the TTS API has rate limits; the script has built-in retry with exponential backoff).
+
+**Resumable**: If the script is interrupted (rate limits, network issues, Ctrl+C), just re-run it — it skips lessons and chunks that already exist.
+
+### Generate a single lesson's podcast
+
+```bash
+bun run scripts/generate-podcasts.ts net-01    # Just lesson net-01
+bun run scripts/generate-podcasts.ts nut-02    # Just lesson nut-02
+```
+
+### Generate in small batches (if API is rate-limiting)
+
+If you hit persistent 429 errors, use the batch script which generates only N chunks per run:
+
+```bash
+# Generate 3 chunks at a time for lesson net-01
+bash scripts/gen-batch.sh net-01 3
+
+# Run repeatedly until all chunks done, then it auto-concatenates
+bash scripts/gen-batch.sh net-01 3
+```
+
+### How podcasts work in the app
+
+- The `PodcastPlayer` component does a `HEAD` request to `/audio/lesson-{id}.wav` when a lesson loads
+- If the file exists, the full player UI shows (play/pause, skip, speed, download)
+- If the file doesn't exist, a graceful "Podcast not yet generated" amber card shows instead — the lesson is still fully usable (theory + exercises)
+
+### Customizing podcast scripts
+
+The dialogue scripts are generated by `/src/lib/podcast-script.ts`. Edit this file to change:
+- The intros/outros per module
+- How theory is converted to dialogue
+- Which key terms are included
+- The conversational tone (formal → casual)
+
+After editing, regenerate the audio by running the generation script again.
+
+## Project Structure
+
+```
+.
+├── public/
+│   └── audio/                          # Generated podcast WAV files
+├── scripts/
+│   ├── generate-podcasts.ts            # TTS generation pipeline
+│   └── gen-batch.sh                    # Incremental batch generator
+├── src/
+│   ├── app/
+│   │   ├── globals.css                 # Tech-dark theme
+│   │   ├── layout.tsx                  # Root layout
+│   │   └── page.tsx                    # Main page shell
+│   ├── components/
+│   │   ├── bootcamp/
+│   │   │   ├── curriculum-path.tsx     # Landing view (lesson tree)
+│   │   │   ├── lesson-player.tsx       # Lesson view (theory + exercises)
+│   │   │   ├── exercises.tsx           # 6 exercise type components
+│   │   │   └── podcast-player.tsx      # Audio player UI
+│   │   └── ui/                         # shadcn/ui components
+│   └── lib/
+│       ├── curriculum.ts               # 21 lessons + 9 modules + exercises
+│       ├── podcast-script.ts           # 2-host dialogue generator
+│       ├── bootcamp-store.ts           # Zustand store (XP, completion)
+│       └── utils.ts
+└── package.json
+```
+
+## Curriculum Overview
+
+| Module | Lessons | Topics |
+|--------|---------|--------|
+| Networking Fundamentals | 10 | OSI model, IPs/CIDR, switches, VLANs, routing, TCP/UDP, NAT, DNS, DHCP, firewalls/LACP |
+| Nutanix Foundations | 4 | HCI vs 3-tier, CVM, AHV, clusters & RF |
+| Distributed Storage Fabric | 2 | DSF overview, storage pools/containers/EC-X |
+| AHV Networking | 3 | OVS & bridges, VLAN tagging & bonds, traffic separation & jumbo frames |
+| Prism Management | 2 | Prism Element vs Central, categories & RBAC |
+| Flow Network Virtualization | 2 | SDN overview, VPCs/floating IPs/NAT |
+| Data Services | 1 | Files, Volumes, Objects |
+| Operations & Automation | 1 | Calm, Move, Karbon |
+| Hybrid & Multi-Cloud | 1 | NC2, Xi Cloud |
+
+## Deployment
+
+### Vercel (recommended)
+
+1. Push to GitHub
+2. Go to [vercel.com](https://vercel.com) → New Project → import the repo
+3. Framework preset: Next.js (auto-detected)
+4. Add `ZAI_API_KEY` as an env var (only if you need to regenerate podcasts)
+5. Deploy
+
+> Note: The `/public/audio/` folder can be large (~150 MB for all 21 podcasts). If Vercel complains, either (a) commit only a subset, or (b) host audio on S3/Cloudinary and update the URL in `podcast-player.tsx`.
+
+### Other platforms
+
+The app is a standard Next.js 16 app — deploy anywhere that supports Node.js (Netlify, Railway, Render, self-hosted). Run `bun run build` then `bun run start`.
+
+## License
+
+MIT — free to use, modify, and distribute. Content is based on publicly available Nutanix documentation; verify against the latest official docs before any production deployment.
+
+## Credits
+
+Built with [Z.ai](https://z.ai)'s GLM model and z-ai-web-dev-sdk for TTS.
